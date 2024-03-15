@@ -1053,3 +1053,17 @@ const newDeck = {
       suit: 'SPADES'
     }
   };
+
+/*----- constants -----*/
+
+
+/*----- state variables -----*/
+
+
+/*----- cached elements  -----*/
+
+
+/*----- event listeners -----*/
+
+
+/*----- functions -----*/

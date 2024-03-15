@@ -24,11 +24,11 @@
 
 ## 2) Game Loading
    - 2.1) Initialize the game
-   - 2.2) Render the initial values and design of the game
+      - Render the initial values and design of the game
 
 ## 3) Play - player
-   - 3.1) Place wagers
-   - 3.2) (stretch goal) Hit "Bet" button - card
+   - 3.1) (stretch goal) Place wagers
+   - 3.2) Hit "Bet" button - card
    - 3.3) Make decisions
      - Click "Hit" button
      - Click "Stand" button
