@@ -11,16 +11,30 @@
 
 <body>
     <h1>Blackjack</h1>
-    <p>52 Card Left</p>
-    <span>Bet Amount</span>
-    <input type="number" min="0" max="100" />
-    <button>Bet</button>
-    <h2>Dealer's hand</h2>
-    <p>Dealer's score</p>
-    <h2>Player's hand</h2>
-    <p>Player's score</p>
-    <button>Hit</button>
-    <button>Stand</button>
+    <div>
+        <p>52 Card Left</p>
+        <span>Bet Amount</span>
+        <input type="number" min="0" max="100" />
+        <button>Bet</button>
+    </div>
+
+    <div>
+        <h2>Dealer's hand</h2>
+        <section class="card-container">Cards go here</section>
+        <p>Dealer's score</p>
+    </div>
+
+    <div>
+        <h2>Player's hand</h2>
+        <section class="card-container">Cards go here</section>
+        <p>Player's score</p>
+    </div>
+    <div>
+        <button>Hit</button>
+        <button>Stand</button>
+        <button>Reset</button>
+    </div>
+
 </body>
 
 </html>
