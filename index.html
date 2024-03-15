@@ -14,19 +14,25 @@
     <div>
         <p>52 Card Left</p>
         <span>Bet Amount</span>
-        <input type="number" min="0" max="100" />
-        <button>Bet</button>
+        <input id="bet-input" type="number" min="0" max="100" />
+        <button id="bet">Bet</button>
     </div>
 
     <div>
         <h2>Dealer's hand</h2>
-        <section class="card-container">Cards go here</section>
+        <section id="dealer-hand" class="card-container">
+            <img id="d-card-1" class="card">
+            <img id="d-card-2" class="card">
+        </section>
         <p>Dealer's score</p>
     </div>
 
     <div>
         <h2>Player's hand</h2>
-        <section class="card-container">Cards go here</section>
+        <section id="player-hand" class="card-container">
+            <img id="p-card-1" class="card">
+            <img id="p-card-2" class="card">
+        </section>
         <p>Player's score</p>
     </div>
     <div>
