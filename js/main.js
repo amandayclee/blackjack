@@ -559,8 +559,8 @@ init();
 
 function init() {
   scores = {
-    dealer: 0,
-    player: 0
+    dealer: [],
+    player: []
   };
 
   hands = {
@@ -614,7 +614,7 @@ function renderHands() {
   for (let i = 0; i < playerHandCard.length; i++) {
     if (!playerHandCard[i].src && hands.player.length > 0) {
       playerHandCard[i].src = hands.player[0].image;
-      scores.player += parseInt(hands.player[0].value);
+      scores.player.push(hands.player[0].value);
       hands.player.shift();
     }
   }
@@ -622,18 +622,41 @@ function renderHands() {
   for (let i = 0; i < dealerHandCard.length; i++) {
     if (!dealerHandCard[i].src && hands.dealer.length > 0) {
       dealerHandCard[i].src = hands.dealer[0].image;
-      scores.dealer += parseInt(hands.dealer[0].value);
+      scores.dealer.push(hands.dealer[0].value);
       hands.dealer.shift();
     }
   }
-  playerScore.innerText = `Player's score: ${scores.player}`;
-  dealerScore.innerText = `Dealer's score: ${scores.dealer}`;
+  renderScores();
 }
 
-// function renderScores() {
+function renderScores() {
+  let pScore = 0;
+  let dScore = 0;
 
-// }
+  for (let obj of scores.dealer) {
+    if (obj === 'JACK' || obj === 'QUEEN' || obj === 'KING') {
+      dScore += 10;
+    } else if (obj === 'ACE') {
+      dScore += 1;
+    } else {
+      dScore += parseInt(obj);
+    }
+  }
+
+  for (let obj of scores.player) {
+    if (obj === 'JACK' || obj === 'QUEEN' || obj === 'KING') {
+      pScore += 10;
+    } else if (obj === 'ACE') {
+      pScore += 1;
+    } else {
+      pScore += parseInt(obj);
+    }
+  }
+
+  playerScore.innerText = `Player's score: ${pScore}`;
+  dealerScore.innerText = `Dealer's score: ${dScore}`;
+}
 
 function render() {
-  // renderScores();
+  renderScores();
 }
