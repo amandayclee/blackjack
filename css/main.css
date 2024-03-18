@@ -22,10 +22,11 @@ div {
     justify-content: flex-end;
     border: 2px solid grey;
     padding: 10px;
+    max-width: 500px;
 }
 
 .card {
     max-width: 20%;
-    max-height: 20%;
+    max-height: auto;
     padding: 0 5px;
 }

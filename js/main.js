@@ -526,6 +526,15 @@ const backCard = {
     image: 'https://www.deckofcardsapi.com/static/img/back.png'
 }
 
+const MSG_LOOKUPS = {
+  null: 'Game is on!',
+  'tie': "It's a push!",
+  'player': "You Win!",
+  'dealer': "You Lose!",
+  'pbj': "Wow You get a Blackjack!",
+  'dbk': "Dealer gets a Blackjack!"
+}
+
 /*----- state variables -----*/
 let shuffledDeck;
 // obj;
@@ -541,9 +550,11 @@ let winner;
 // obj: 'dealer', 'player'
 let hitStand;
 let firstDealerCard;
+let firstDealerScore;
 
 /*----- cached elements  -----*/
-const cardCount = document.getElementById('card-count');
+const msgEl = document.getElementById('msg');
+const cardCountEl = document.getElementById('card-count');
 const hitBtn = document.getElementById('hit');
 const resetBtn = document.getElementById('reset');
 const standBtn = document.getElementById('stand');
@@ -574,7 +585,6 @@ function init() {
     player: []
   };
 
-  winner = null;
   hitStand = false;
 
   shuffledDeck = getNewShuffledDeck();
@@ -586,19 +596,17 @@ function init() {
   for (let obj of dealerHandCard) {
     obj.removeAttribute('src');
   }
-  cardCount.innerText = `${shuffledDeck.length} Card Left`;
+  cardCountEl.innerText = `${shuffledDeck.length} Card Left`;
   render();
 }
 
 function handleStand() {
   hitStand = true;
-  console.log(`should be clicked ${hitStand}`);
-  if (scores.dealer < 17) {
+  while (scores.dealer < 17) {
     hands.dealer.push(shuffledDeck.pop());
     renderHands();
-  } else {
-    renderScores();
   }
+  renderScores();
 }
 
 function handleHit() {
@@ -612,16 +620,17 @@ function handleHit() {
 }
 
 function handleBet() {
+  winner = null;
   const betAmount = document.getElementById('bet-input').value;
   console.log(`bet amount: ${betAmount}`);
-  if (betAmount === '0') {
+  if (betAmount === '0' || betAmount === null) {
     return;
   } else {
     hands.player.push(shuffledDeck.pop());
     hands.player.push(shuffledDeck.pop());
     hands.dealer.push(shuffledDeck.pop());
     hands.dealer.push(shuffledDeck.pop());
-    renderHands();
+    render();
   }
 }
 
@@ -636,7 +645,7 @@ function getNewShuffledDeck() {
 }
 
 function renderHands() {
-  cardCount.innerText = `${shuffledDeck.length} Card Left`;
+  cardCountEl.innerText = `${shuffledDeck.length} Card Left`;
   console.log(`it's player hand: ${hands.player.length}`);
 
   for (let i = 0; i < playerHandCard.length; i++) {
@@ -682,7 +691,12 @@ function renderHands() {
       hands.dealer.shift();
     }
   }
-  renderScores();
+}
+
+function renderMsg() {
+  if (winner in MSG_LOOKUPS) {
+    msgEl.innerText = MSG_LOOKUPS[winner];
+  }
 }
 
 function renderScores() {
@@ -695,42 +709,38 @@ function renderScores() {
   }
 
   if (scores.player > 21) {
-    console.log("You Bust!");
     winner = 'dealer';
     const firstCard = document.getElementById('d-card-1');
     firstCard.src = firstDealerCard;
   } else if (scores.player === 21) {
     const firstCard = document.getElementById('d-card-1');
     firstCard.src = firstDealerCard;
-    console.log("Blackjack!");
     if (scores.dealer === 21) {
-      console.log("It's a Blackjack Tie!");
       winner = 'tie';
     } else {
-      winner = 'player';
-      console.log("You Win!");
+      winner = 'pbj';
     }
   }
 
   if (scores.dealer > 21) {
-    console.log("You Win!");
     winner = 'player';
   } else if (scores.dealer === 21) {
-    console.log("You Lose!")
-    winner = 'dealer';
+    winner = 'dpj';
   }
   console.log(`Here ${winner} There ${hitStand}`);
   if (scores.dealer > 17 && !winner && hitStand) {
     if (scores.dealer < scores.player) {
-      console.log("You Win!");
+      winner = 'player';
     } else if (scores.dealer > scores.player) {
-      console.log("You Lose!");
+      winner = 'dealer';
     } else {
-      console.log("It's a Tie!");
+      winner = 'tie';
     }
   }
 }
 
 function render() {
+  renderHands();
   renderScores();
+  renderMsg();
 }
