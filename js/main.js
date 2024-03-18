@@ -523,7 +523,7 @@ const originalDeck = {
 };
 
 const backCard = {
-    image: 'https://www.deckofcardsapi.com/static/img/back.png'
+  image: 'https://www.deckofcardsapi.com/static/img/back.png'
 }
 
 const MSG_LOOKUPS = {
@@ -549,8 +549,7 @@ let scores;
 let winner;
 // obj: 'dealer', 'player'
 let hitStand;
-let firstDealerCard;
-let firstDealerScore;
+let faceDownCard;
 
 /*----- cached elements  -----*/
 const msgEl = document.getElementById('msg');
@@ -604,9 +603,9 @@ function handleStand() {
   hitStand = true;
   while (scores.dealer < 17) {
     hands.dealer.push(shuffledDeck.pop());
-    renderHands();
+    render();
   }
-  renderScores();
+  render();
 }
 
 function handleHit() {
@@ -622,8 +621,7 @@ function handleHit() {
 function handleBet() {
   winner = null;
   const betAmount = document.getElementById('bet-input').value;
-  console.log(`bet amount: ${betAmount}`);
-  if (betAmount === '0' || betAmount === null) {
+  if (betAmount === null || betAmount === '0' || betAmount === '') {
     return;
   } else {
     hands.player.push(shuffledDeck.pop());
@@ -646,23 +644,11 @@ function getNewShuffledDeck() {
 
 function renderHands() {
   cardCountEl.innerText = `${shuffledDeck.length} Card Left`;
-  console.log(`it's player hand: ${hands.player.length}`);
 
   for (let i = 0; i < playerHandCard.length; i++) {
     if (!playerHandCard[i].src && hands.player.length > 0) {
       playerHandCard[i].src = hands.player[0].image;
-      let pCardValue = hands.player[0].value
-      if (pCardValue === 'JACK' || pCardValue === 'QUEEN' || pCardValue === 'KING') {
-        scores.player += 10;
-      } else if (pCardValue === 'ACE') {
-        if (scores.player + 11 > 21) {
-          scores.player += 1;
-        } else {
-          scores.player += 11;
-        }
-      } else {
-        scores.player += parseInt(pCardValue);
-      }
+      scores.player += checkCardValue(hands.player[0]);
       hands.player.shift();
     }
   }
@@ -670,28 +656,30 @@ function renderHands() {
   for (let i = 0; i < dealerHandCard.length; i++) {
     if (!dealerHandCard[i].src && hands.dealer.length > 0) {
       if (i === 0) {
-        firstDealerCard = hands.dealer[0].image;
-        console.log(`first img ${firstDealerCard}`);
+        faceDownCard = hands.dealer[0];
         dealerHandCard[i].src = backCard.image;
       } else {
         dealerHandCard[i].src = hands.dealer[0].image;
       }
-      let dCardValue = hands.dealer[0].value;
-      if (dCardValue === 'JACK' || dCardValue === 'QUEEN' || dCardValue === 'KING') {
-        scores.dealer += 10;
-      } else if (dCardValue === 'ACE') {
-        if (scores.dealer + 11 > 21) {
-          scores.dealer += 1;
-        } else {
-          scores.dealer += 11;
-        }
-      } else {
-        scores.dealer += parseInt(dCardValue);
-      }
+      scores.dealer += checkCardValue(hands.dealer[0]);
       hands.dealer.shift();
     }
   }
 }
+
+function checkCardValue(card) {
+  switch (card.value) {
+    case 'JACK':
+    case 'QUEEN':
+    case 'KING':
+      return 10;
+    case 'ACE':
+      return scores.dealer + 11 > 21 ? 1 : 11;
+    default:
+      return parseInt(card.value);
+  }
+}
+
 
 function renderMsg() {
   if (winner in MSG_LOOKUPS) {
@@ -703,18 +691,9 @@ function renderScores() {
   playerScore.innerText = `Player's score: ${scores.player}`;
   dealerScore.innerText = `Dealer's score: ${scores.dealer}`;
 
-  if (hitStand) {
-    const firstCard = document.getElementById('d-card-1');
-    firstCard.src = firstDealerCard;
-  }
-
   if (scores.player > 21) {
     winner = 'dealer';
-    const firstCard = document.getElementById('d-card-1');
-    firstCard.src = firstDealerCard;
   } else if (scores.player === 21) {
-    const firstCard = document.getElementById('d-card-1');
-    firstCard.src = firstDealerCard;
     if (scores.dealer === 21) {
       winner = 'tie';
     } else {
@@ -727,8 +706,8 @@ function renderScores() {
   } else if (scores.dealer === 21) {
     winner = 'dpj';
   }
-  console.log(`Here ${winner} There ${hitStand}`);
-  if (scores.dealer > 17 && !winner && hitStand) {
+
+  if (scores.dealer >= 17 && !winner && hitStand) {
     if (scores.dealer < scores.player) {
       winner = 'player';
     } else if (scores.dealer > scores.player) {
@@ -739,8 +718,16 @@ function renderScores() {
   }
 }
 
+function renderFaceDown() {
+  if (winner && hitStand) {
+    const firstCard = document.getElementById('d-card-1');
+    firstCard.src = faceDownCard.image;
+  }
+}
+
 function render() {
   renderHands();
   renderScores();
   renderMsg();
+  renderFaceDown();
 }
