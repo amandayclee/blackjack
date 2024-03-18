@@ -522,7 +522,6 @@ const originalDeck = {
   }
 };
 
-
 /*----- state variables -----*/
 let shuffledDeck;
 // obj;
@@ -538,12 +537,22 @@ let winner;
 // obj: 'dealer', 'player'
 
 /*----- cached elements  -----*/
+const cardCount = document.getElementById('card-count');
+const hitBtn = document.getElementById('hit');
+const resetBtn = document.getElementById('reset');
+const standBtn = document.getElementById('stand');
 const playerHandCard = document.querySelectorAll('#player-hand img');
 const dealerHandCard = document.querySelectorAll('#dealer-hand img');
+const playerScore = document.getElementById('player-score');
+const dealerScore = document.getElementById('dealer-score');
 
 /*----- event listeners -----*/
 document.getElementById('bet')
   .addEventListener('click', handleBet);
+
+resetBtn.addEventListener('click', init);
+hitBtn.addEventListener('click', handleHit);
+standBtn.addEventListener('click', handleStand);
 
 /*----- functions -----*/
 init();
@@ -565,14 +574,27 @@ function init() {
   render();
 }
 
+function handleStand() {
+  console.log('test');
+}
+
+function handleHit() {
+  hands.player.push(shuffledDeck.pop());
+  renderHands();
+}
+
 function handleBet() {
   const betAmount = document.getElementById('bet-input').value;
-  if (!betAmount) return;
-  hands.player.push(shuffledDeck.pop());
-  hands.player.push(shuffledDeck.pop());
-  hands.dealer.push(shuffledDeck.pop());
-  hands.dealer.push(shuffledDeck.pop());
-  renderHands();
+  console.log(`bet amount: ${betAmount}`);
+  if (betAmount === '0') {
+    return;
+  } else {
+    hands.player.push(shuffledDeck.pop());
+    hands.player.push(shuffledDeck.pop());
+    hands.dealer.push(shuffledDeck.pop());
+    hands.dealer.push(shuffledDeck.pop());
+    renderHands();
+  }
 }
 
 function getNewShuffledDeck() {
@@ -586,16 +608,26 @@ function getNewShuffledDeck() {
 }
 
 function renderHands() {
-  for (let imgEl of playerHandCard) {
-    imgEl.src = hands.player[0].image;
-    hands.player.shift();
+  cardCount.innerText = `${shuffledDeck.length} Card Left`;
+  console.log(`it's player hand: ${hands.player.length}`);
+
+  for (let i = 0; i < playerHandCard.length; i++) {
+    if (!playerHandCard[i].src && hands.player.length > 0) {
+      playerHandCard[i].src = hands.player[0].image;
+      scores.player += parseInt(hands.player[0].value);
+      hands.player.shift();
+    }
   }
 
-  for (let imgEl of dealerHandCard) {
-    console.log(hands.dealer);
-    imgEl.src = hands.dealer[0].image;
-    hands.dealer.shift();
+  for (let i = 0; i < dealerHandCard.length; i++) {
+    if (!dealerHandCard[i].src && hands.dealer.length > 0) {
+      dealerHandCard[i].src = hands.dealer[0].image;
+      scores.dealer += parseInt(hands.dealer[0].value);
+      hands.dealer.shift();
+    }
   }
+  playerScore.innerText = `Player's score: ${scores.player}`;
+  dealerScore.innerText = `Dealer's score: ${scores.dealer}`;
 }
 
 // function renderScores() {
