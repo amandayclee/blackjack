@@ -559,8 +559,8 @@ init();
 
 function init() {
   scores = {
-    dealer: [],
-    player: []
+    dealer: 0,
+    player: 0
   };
 
   hands = {
@@ -571,6 +571,13 @@ function init() {
   shuffledDeck = getNewShuffledDeck();
   bet = 0;
   deckLeft = shuffledDeck.length;
+  for (let obj of playerHandCard) {
+    obj.removeAttribute('src');
+  }
+  for (let obj of dealerHandCard) {
+    obj.removeAttribute('src');
+  }
+  cardCount.innerText = `${shuffledDeck.length} Card Left`;
   render();
 }
 
@@ -579,8 +586,13 @@ function handleStand() {
 }
 
 function handleHit() {
-  hands.player.push(shuffledDeck.pop());
-  renderHands();
+  console.log(`score score: ${scores.player}`);
+  if (scores.player <= 21 && scores.player > 0) {
+    hands.player.push(shuffledDeck.pop());
+    renderHands();
+  } else {
+    return;
+  }
 }
 
 function handleBet() {
@@ -614,7 +626,18 @@ function renderHands() {
   for (let i = 0; i < playerHandCard.length; i++) {
     if (!playerHandCard[i].src && hands.player.length > 0) {
       playerHandCard[i].src = hands.player[0].image;
-      scores.player.push(hands.player[0].value);
+      let pCardValue = hands.player[0].value
+      if (pCardValue === 'JACK' || pCardValue === 'QUEEN' || pCardValue === 'KING') {
+        scores.player += 10;
+      } else if (pCardValue === 'ACE') {
+        if (scores.player + 11 > 21) {
+          scores.player += 1;
+        } else {
+          scores.dealer += 11;
+        }
+      } else {
+        scores.player += parseInt(pCardValue);
+      }
       hands.player.shift();
     }
   }
@@ -622,7 +645,18 @@ function renderHands() {
   for (let i = 0; i < dealerHandCard.length; i++) {
     if (!dealerHandCard[i].src && hands.dealer.length > 0) {
       dealerHandCard[i].src = hands.dealer[0].image;
-      scores.dealer.push(hands.dealer[0].value);
+      let dCardValue = hands.dealer[0].value;
+      if (dCardValue === 'JACK' || dCardValue === 'QUEEN' || dCardValue === 'KING') {
+        scores.dealer += 10;
+      } else if (dCardValue === 'ACE') {
+        if (scores.dealer + 11 > 21) {
+          scores.dealer += 1;
+        } else {
+          scores.dealer += 11;
+        }
+      } else {
+        scores.dealer += parseInt(dCardValue);
+      }
       hands.dealer.shift();
     }
   }
@@ -630,31 +664,21 @@ function renderHands() {
 }
 
 function renderScores() {
-  let pScore = 0;
-  let dScore = 0;
+  playerScore.innerText = `Player's score: ${scores.player}`;
+  dealerScore.innerText = `Dealer's score: ${scores.dealer}`;
 
-  for (let obj of scores.dealer) {
-    if (obj === 'JACK' || obj === 'QUEEN' || obj === 'KING') {
-      dScore += 10;
-    } else if (obj === 'ACE') {
-      dScore += 1;
-    } else {
-      dScore += parseInt(obj);
-    }
+  if (scores.player > 21) {
+    console.log("You Bust!");
+  } else if (scores.player === 21) {
+    console.log("Blackjack!");
   }
 
-  for (let obj of scores.player) {
-    if (obj === 'JACK' || obj === 'QUEEN' || obj === 'KING') {
-      pScore += 10;
-    } else if (obj === 'ACE') {
-      pScore += 1;
-    } else {
-      pScore += parseInt(obj);
-    }
+  if (scores.dealer > 21) {
+    console.log("You Win!");
+  } else if (scores.dealer === 21) {
+    console.log("You Lose!")
   }
 
-  playerScore.innerText = `Player's score: ${pScore}`;
-  dealerScore.innerText = `Dealer's score: ${dScore}`;
 }
 
 function render() {
