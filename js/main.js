@@ -535,6 +535,7 @@ let scores;
 // obj: dealer: 0, player: 0
 let winner;
 // obj: 'dealer', 'player'
+let hitStand;
 
 /*----- cached elements  -----*/
 const cardCount = document.getElementById('card-count');
@@ -568,6 +569,9 @@ function init() {
     player: []
   };
 
+  winner = null;
+  hitStand = false;
+
   shuffledDeck = getNewShuffledDeck();
   bet = 0;
   deckLeft = shuffledDeck.length;
@@ -582,16 +586,21 @@ function init() {
 }
 
 function handleStand() {
-  console.log('test');
+  hitStand = true;
+  console.log(`should be clicked ${hitStand}`);
+  while (scores.dealer < 17) {
+    hands.dealer.push(shuffledDeck.pop());
+  }
+  renderHands();
 }
 
 function handleHit() {
   console.log(`score score: ${scores.player}`);
-  if (scores.player <= 21 && scores.player > 0) {
+  if (scores.player < 21 && scores.player > 0) {
     hands.player.push(shuffledDeck.pop());
     renderHands();
   } else {
-    return;
+    renderScores();
   }
 }
 
@@ -633,7 +642,7 @@ function renderHands() {
         if (scores.player + 11 > 21) {
           scores.player += 1;
         } else {
-          scores.dealer += 11;
+          scores.player += 11;
         }
       } else {
         scores.player += parseInt(pCardValue);
@@ -669,16 +678,35 @@ function renderScores() {
 
   if (scores.player > 21) {
     console.log("You Bust!");
+    winner = 'dealer';
   } else if (scores.player === 21) {
     console.log("Blackjack!");
+    if (scores.dealer === 21) {
+      console.log("It's a Blackjack Tie!");
+      winner = 'tie';
+    } else {
+      winner = 'player';
+      console.log("You Win!");
+    }
   }
 
   if (scores.dealer > 21) {
     console.log("You Win!");
+    winner = 'player';
   } else if (scores.dealer === 21) {
     console.log("You Lose!")
+    winner = 'dealer';
   }
-
+  console.log(`Here ${winner} There ${hitStand}`);
+  if (scores.dealer > 17 && !winner && hitStand) {
+    if (scores.dealer < scores.player) {
+      console.log("You Win!");
+    } else if (scores.dealer > scores.player) {
+      console.log("You Lose!");
+    } else {
+      console.log("It's a Tie!");
+    }
+  }
 }
 
 function render() {
