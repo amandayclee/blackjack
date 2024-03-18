@@ -522,6 +522,10 @@ const originalDeck = {
   }
 };
 
+const backCard = {
+    image: 'https://www.deckofcardsapi.com/static/img/back.png'
+}
+
 /*----- state variables -----*/
 let shuffledDeck;
 // obj;
@@ -536,6 +540,7 @@ let scores;
 let winner;
 // obj: 'dealer', 'player'
 let hitStand;
+let firstDealerCard;
 
 /*----- cached elements  -----*/
 const cardCount = document.getElementById('card-count');
@@ -588,10 +593,12 @@ function init() {
 function handleStand() {
   hitStand = true;
   console.log(`should be clicked ${hitStand}`);
-  while (scores.dealer < 17) {
+  if (scores.dealer < 17) {
     hands.dealer.push(shuffledDeck.pop());
+    renderHands();
+  } else {
+    renderScores();
   }
-  renderHands();
 }
 
 function handleHit() {
@@ -653,7 +660,13 @@ function renderHands() {
 
   for (let i = 0; i < dealerHandCard.length; i++) {
     if (!dealerHandCard[i].src && hands.dealer.length > 0) {
-      dealerHandCard[i].src = hands.dealer[0].image;
+      if (i === 0) {
+        firstDealerCard = hands.dealer[0].image;
+        console.log(`first img ${firstDealerCard}`);
+        dealerHandCard[i].src = backCard.image;
+      } else {
+        dealerHandCard[i].src = hands.dealer[0].image;
+      }
       let dCardValue = hands.dealer[0].value;
       if (dCardValue === 'JACK' || dCardValue === 'QUEEN' || dCardValue === 'KING') {
         scores.dealer += 10;
@@ -676,10 +689,19 @@ function renderScores() {
   playerScore.innerText = `Player's score: ${scores.player}`;
   dealerScore.innerText = `Dealer's score: ${scores.dealer}`;
 
+  if (hitStand) {
+    const firstCard = document.getElementById('d-card-1');
+    firstCard.src = firstDealerCard;
+  }
+
   if (scores.player > 21) {
     console.log("You Bust!");
     winner = 'dealer';
+    const firstCard = document.getElementById('d-card-1');
+    firstCard.src = firstDealerCard;
   } else if (scores.player === 21) {
+    const firstCard = document.getElementById('d-card-1');
+    firstCard.src = firstDealerCard;
     console.log("Blackjack!");
     if (scores.dealer === 21) {
       console.log("It's a Blackjack Tie!");
