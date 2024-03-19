@@ -16,6 +16,12 @@ div {
     margin-bottom: 5vh;
 }
 
+.centered {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+
 .card-container {
     display: flex;
     flex-wrap: wrap;
@@ -31,3 +37,8 @@ div {
     padding: 0 5px;
 }
 
+button:disabled {
+    background-color: #cccccc;
+    color: #666666;
+    cursor: not-allowed;
+  }

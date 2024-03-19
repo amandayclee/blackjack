@@ -685,6 +685,7 @@ function setVisibility(stage) {
     chipBtns.forEach(btn => {
       btn.style.visibility = 'visible';
     });
+    betBtn.disabled = false;
     zeroBtn.style.visibility = 'visible';
     hitBtn.style.visibility = 'hidden';
     standBtn.style.visibility = 'hidden';
@@ -694,7 +695,7 @@ function setVisibility(stage) {
     chipBtns.forEach(btn => {
       btn.style.visibility = 'hidden';
     });
-    betBtn.style.visibility = 'hidden';
+    betBtn.disabled = true;
     zeroBtn.style.visibility = 'hidden';
     hitBtn.style.visibility = 'visible';
     standBtn.style.visibility = 'visible';
@@ -724,7 +725,7 @@ function renderHands() {
   for (let i = 0; i < playerHandCard.length; i++) {
     if (!playerHandCard[i].src && hands.player.length > 0) {
       playerHandCard[i].src = hands.player[0].image;
-      scores.player += checkCardValue(hands.player[0], 'player');
+      scores.player += checkCardValue(hands.player[0], scores.player);
       hands.player.shift();
     }
   }
@@ -737,7 +738,9 @@ function renderHands() {
       } else {
         dealerHandCard[i].src = hands.dealer[0].image;
       }
-      scores.dealer += checkCardValue(hands.dealer[0], 'dealer');
+      console.log(`current card value is ${checkCardValue(hands.dealer[0], scores.dealer)}`)
+      scores.dealer += checkCardValue(hands.dealer[0], scores.dealer);
+      console.log(`current score value is ${scores.dealer}`)
       hands.dealer.shift();
     }
   }
@@ -752,7 +755,7 @@ function checkCardValue(card, checker) {
       case 'KING':
         return 10;
       case 'ACE':
-        return scores.checker + 11 > 21 ? 1 : 11;
+        return checker + 11 > 21 ? 1 : 11;
       default:
         return parseInt(card.value);
     }
@@ -798,7 +801,7 @@ function renderMsg() {
 
 function renderScores() {
   if (!hitStand && scores.player && !winner) {
-    dealerScore.innerText = `Dealer's score: ${scores.dealer - checkCardValue(faceDownCard, 'dealer')}`;
+    dealerScore.innerText = `Dealer's score: ${scores.dealer - checkCardValue(faceDownCard, scores.dealer)}`;
   } else {
     dealerScore.innerText = `Dealer's score: ${scores.dealer}`;
   }
@@ -809,7 +812,7 @@ function renderFaceDown() {
   if (winner) {
     const firstCard = document.getElementById('d-card-1');
     firstCard.src = faceDownCard.image;
-    
+
     hitBtn.style.visibility = 'hidden';
     standBtn.style.visibility = 'hidden';
     resetBtn.style.visibility = 'visible';
