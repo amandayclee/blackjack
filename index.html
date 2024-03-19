@@ -14,9 +14,18 @@
     <h2 id="msg">Place some bets!</h2>
     <div>
         <p id="card-count">52 Cards Left</p>
-        <span>Bet Amount</span>
-        <input id="bet-input" type="number" min="0" max="100" />
+        Bet Amount: $<span id="bet-input">0</span> 
         <button id="bet">Bet</button>
+        <p>
+            <button class="bet-amount">$1</button>
+            <button class="bet-amount">$5</button>
+            <button class="bet-amount">$10</button>
+            <button class="bet-amount">$50</button>
+            <button class="bet-amount">$100</button>
+            <button class="bet-amount">$200</button>
+            <button id="zero">Zero Out</button>
+        </p>
+        <p>Bankroll: $<span id="bankroll">1000</span></p>
     </div>
 
     <div>
@@ -41,11 +50,12 @@
             <img id="p-card-5" class="card">
         </section>
         <p id="player-score">Player's score: 0</p>
-    </div>
-    <div>
         <button id="hit">Hit</button>
         <button id="stand">Stand</button>
-        <button id="reset">Reset</button>
+    </div>
+    <div>
+        <button id="reset">Reset the Game</button>
+        <button id="round">Another Round</button>
     </div>
 
 </body>

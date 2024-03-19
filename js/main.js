@@ -532,7 +532,7 @@ const MSG_LOOKUPS = {
   'player': "You Win!",
   'dealer': "You Lose!",
   'pbj': "Wow You get a Blackjack!",
-  'dbk': "Dealer gets a Blackjack!"
+  'dbj': "Dealer gets a Blackjack!"
 }
 
 /*----- state variables -----*/
@@ -550,30 +550,66 @@ let winner;
 // obj: 'dealer', 'player'
 let hitStand;
 let faceDownCard;
+let deckShuffled;
 
 /*----- cached elements  -----*/
 const msgEl = document.getElementById('msg');
 const cardCountEl = document.getElementById('card-count');
 const hitBtn = document.getElementById('hit');
 const resetBtn = document.getElementById('reset');
+const zeroBtn = document.getElementById('zero');
+const roundBtn = document.getElementById('round');
 const standBtn = document.getElementById('stand');
 const playerHandCard = document.querySelectorAll('#player-hand img');
 const dealerHandCard = document.querySelectorAll('#dealer-hand img');
 const playerScore = document.getElementById('player-score');
 const dealerScore = document.getElementById('dealer-score');
+const betAmount = document.getElementById('bet-input');
+const chipBtns = document.querySelectorAll('.bet-amount');
+const bankAmount = document.getElementById('bankroll');
+const betBtn = document.getElementById('bet');
 
 /*----- event listeners -----*/
-document.getElementById('bet')
-  .addEventListener('click', handleBet);
-
-resetBtn.addEventListener('click', init);
+betBtn.addEventListener('click', handleBet);
+zeroBtn.addEventListener('click', function () {
+  betAmount.innerText = '0';
+});
 hitBtn.addEventListener('click', handleHit);
 standBtn.addEventListener('click', handleStand);
+chipBtns.forEach(chipBtn => {
+  chipBtn.addEventListener('click', handleChip);
+});
+
+resetBtn.addEventListener('click', init);
+roundBtn.addEventListener('click', roundInit);
 
 /*----- functions -----*/
 init();
 
 function init() {
+  resetScoresAndHands();
+  clearGameVariables();
+
+  deckShuffled = false;
+  bankAmount.innerText = '1000';
+  shuffledDeck = getShuffledDeck(originalDeck);
+  deckLeft = shuffledDeck.length;
+  cardCountEl.innerText = `${shuffledDeck.length} Card Left`;
+  render();
+}
+
+function roundInit() {
+  if (!deckShuffled && shuffledDeck.length < originalDeck.length) {
+    shuffledDeck = getShuffledDeck(shuffledDeck);
+    deckShuffled = true;
+  }
+
+  resetScoresAndHands();
+  clearGameVariables();
+  render();
+}
+
+function resetScoresAndHands() {
   scores = {
     dealer: 0,
     player: 0
@@ -583,20 +619,23 @@ function init() {
     dealer: [],
     player: []
   };
+}
 
+function clearGameVariables() {
+  faceDownCard = {};
+  winner = "";
   hitStand = false;
-
-  shuffledDeck = getNewShuffledDeck();
+  betAmount.innerText = '0';
   bet = 0;
-  deckLeft = shuffledDeck.length;
+
   for (let obj of playerHandCard) {
     obj.removeAttribute('src');
   }
   for (let obj of dealerHandCard) {
     obj.removeAttribute('src');
   }
-  cardCountEl.innerText = `${shuffledDeck.length} Card Left`;
-  render();
+
+  setVisibility('New game');
 }
 
 function handleStand() {
@@ -609,31 +648,68 @@ function handleStand() {
 }
 
 function handleHit() {
-  console.log(`score score: ${scores.player}`);
   if (scores.player < 21 && scores.player > 0) {
     hands.player.push(shuffledDeck.pop());
-    renderHands();
-  } else {
-    renderScores();
   }
+  render();
+}
+
+function handleChip(evt) {
+  const button = evt.target;
+  let betMoney = parseInt(betAmount.innerText);
+  betMoney += parseInt(button.innerText.replace('$', ''));
+  if (betMoney > parseInt(bankAmount.innerText) + 1) {
+    return;
+  }
+  betAmount.innerText = String(betMoney);
 }
 
 function handleBet() {
+  setVisibility('Ongoing');
   winner = null;
-  const betAmount = document.getElementById('bet-input').value;
-  if (betAmount === null || betAmount === '0' || betAmount === '') {
+  if (betAmount.innerText === null || betAmount.innerText === '0' || betAmount.innerText === '') {
     return;
   } else {
+    bankAmount.innerText = parseInt(bankAmount.innerText) - parseInt(betAmount.innerText);
     hands.player.push(shuffledDeck.pop());
     hands.player.push(shuffledDeck.pop());
     hands.dealer.push(shuffledDeck.pop());
     hands.dealer.push(shuffledDeck.pop());
-    render();
+
   }
+  render();
 }
 
-function getNewShuffledDeck() {
-  const tempDeck = Object.values(originalDeck);
+function setVisibility(stage) {
+  if (stage === 'New game') {
+    chipBtns.forEach(btn => {
+      btn.style.visibility = 'visible';
+    });
+    zeroBtn.style.visibility = 'visible';
+    hitBtn.style.visibility = 'hidden';
+    standBtn.style.visibility = 'hidden';
+    resetBtn.style.visibility = 'hidden';
+    roundBtn.style.visibility = 'hidden';
+  } else {
+    chipBtns.forEach(btn => {
+      btn.style.visibility = 'hidden';
+    });
+    betBtn.style.visibility = 'hidden';
+    zeroBtn.style.visibility = 'hidden';
+    hitBtn.style.visibility = 'visible';
+    standBtn.style.visibility = 'visible';
+  }
+
+}
+
+function getShuffledDeck(deck) {
+  let tempDeck;
+  if (deck === originalDeck) {
+    tempDeck = Object.values(originalDeck).concat(Object.values(originalDeck));
+  } else {
+    tempDeck = Object.values(deck);
+  }
+  
   const newShuffledDeck = [];
   while (tempDeck.length) {
     const rndIdx = Math.floor(Math.random() * tempDeck.length);
@@ -648,7 +724,7 @@ function renderHands() {
   for (let i = 0; i < playerHandCard.length; i++) {
     if (!playerHandCard[i].src && hands.player.length > 0) {
       playerHandCard[i].src = hands.player[0].image;
-      scores.player += checkCardValue(hands.player[0]);
+      scores.player += checkCardValue(hands.player[0], 'player');
       hands.player.shift();
     }
   }
@@ -661,50 +737,39 @@ function renderHands() {
       } else {
         dealerHandCard[i].src = hands.dealer[0].image;
       }
-      scores.dealer += checkCardValue(hands.dealer[0]);
+      scores.dealer += checkCardValue(hands.dealer[0], 'dealer');
       hands.dealer.shift();
     }
   }
+  checkWinner();
 }
 
-function checkCardValue(card) {
-  switch (card.value) {
-    case 'JACK':
-    case 'QUEEN':
-    case 'KING':
-      return 10;
-    case 'ACE':
-      return scores.dealer + 11 > 21 ? 1 : 11;
-    default:
-      return parseInt(card.value);
-  }
-}
-
-
-function renderMsg() {
-  if (winner in MSG_LOOKUPS) {
-    msgEl.innerText = MSG_LOOKUPS[winner];
-  }
-}
-
-function renderScores() {
-  playerScore.innerText = `Player's score: ${scores.player}`;
-  dealerScore.innerText = `Dealer's score: ${scores.dealer}`;
-
-  if (scores.player > 21) {
-    winner = 'dealer';
-  } else if (scores.player === 21) {
-    if (scores.dealer === 21) {
-      winner = 'tie';
-    } else {
-      winner = 'pbj';
+function checkCardValue(card, checker) {
+  if (card) {
+    switch (card.value) {
+      case 'JACK':
+      case 'QUEEN':
+      case 'KING':
+        return 10;
+      case 'ACE':
+        return scores.checker + 11 > 21 ? 1 : 11;
+      default:
+        return parseInt(card.value);
     }
   }
+}
 
-  if (scores.dealer > 21) {
+function checkWinner() {
+  if (scores.player > 21) {
+    winner = 'dealer';
+  } else if (scores.dealer > 21) {
     winner = 'player';
+  } else if (scores.player === 21 && scores.dealer === 21) {
+    winner = 'tie';
+  } else if (scores.player === 21) {
+    winner = 'pbj'
   } else if (scores.dealer === 21) {
-    winner = 'dpj';
+    winner = 'dbj'
   }
 
   if (scores.dealer >= 17 && !winner && hitStand) {
@@ -718,16 +783,54 @@ function renderScores() {
   }
 }
 
+
+function renderMsg() {
+  if (!scores.player && bankAmount.innerText !== '0') {
+    msgEl.innerText = "Place some bets!";
+  } else if (bankAmount.innerText === '0' && betAmount === '0') {
+    msgEl.innerText = "You're Broke! Reset the Game.";
+  } else {
+    if (winner in MSG_LOOKUPS) {
+      msgEl.innerText = MSG_LOOKUPS[winner];
+    }
+  }
+}
+
+function renderScores() {
+  if (!hitStand && scores.player && !winner) {
+    dealerScore.innerText = `Dealer's score: ${scores.dealer - checkCardValue(faceDownCard, 'dealer')}`;
+  } else {
+    dealerScore.innerText = `Dealer's score: ${scores.dealer}`;
+  }
+  playerScore.innerText = `Player's score: ${scores.player}`;
+}
+
 function renderFaceDown() {
-  if (winner && hitStand) {
+  if (winner) {
     const firstCard = document.getElementById('d-card-1');
     firstCard.src = faceDownCard.image;
+    
+    hitBtn.style.visibility = 'hidden';
+    standBtn.style.visibility = 'hidden';
+    resetBtn.style.visibility = 'visible';
+    roundBtn.style.visibility = 'visible';
+  }
+}
+
+function renderBank() {
+  if (winner === 'pbj') {
+    bankAmount.innerText = parseInt(bankAmount.innerText) + parseInt(betAmount.innerText) + parseInt(betAmount.innerText) * 1.5;
+  } else if (winner === 'player') {
+    bankAmount.innerText = parseInt(bankAmount.innerText) + parseInt(betAmount.innerText) + parseInt(betAmount.innerText) * 1;
+  } else if (winner === 'tie') {
+    bankAmount.innerText = parseInt(bankAmount.innerText) + parseInt(betAmount.innerText);
   }
 }
 
 function render() {
   renderHands();
-  renderScores();
   renderMsg();
+  renderScores();
   renderFaceDown();
+  renderBank();
 }
