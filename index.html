@@ -13,9 +13,8 @@
     <h1>Blackjack</h1>
     <h2 id="msg">Place some bets!</h2>
     <div>
-        <p id="card-count">52 Cards Left</p>
-        Bet Amount: $<span id="bet-input">0</span>
-        <button id="bet">Bet</button>
+        <span id="card-count">52 Cards Left</span> ... <span>Bankroll: $<span id="bankroll">1000</span></span>
+        <p>Bet Amount: $<span id="bet-input">0</span> <button id="bet">Bet</button></p>
         <p>
             <button class="bet-amount">$1</button>
             <button class="bet-amount">$5</button>
@@ -25,7 +24,6 @@
             <button class="bet-amount">$200</button>
             <button id="zero">Zero Out</button>
         </p>
-        <p>Bankroll: $<span id="bankroll">1000</span></p>
     </div>
 
     <div>
@@ -57,6 +55,7 @@
     <p><button id="round">Another Round</button></p>
     <p><button id="reset">Reset the Game</button></p>
 
+    <div class="footer"></div>
 </body>
 
 </html>

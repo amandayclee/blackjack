@@ -1,19 +1,36 @@
+@font-face {
+    font-family: "Tr";
+    src: url('./fonts/typori_regular.ttf') format('truetype');
+}
+
 * {
     box-sizing: border-box;
-    font-family: Monospace;
+    font-family: Tr, Monospace;
+    margin: 0.7vh 0;
 }
 
 body {
-    height: 100vh;
+    color: #724E39;
+    background-color: #FFF1E6;
+    height: 95vh;
     display: flex;
     flex-direction: column;
     align-items: center;
     justify-content: center;
+    background-image: url('./assets/grass_bottom.png'), url('./assets/birds_top.png');
+    background-position: bottom, top;
+    background-size: auto 650px, 850px auto;
+    background-repeat: repeat-x, no-repeat;
+    background-position-y: 355px, 0px;
 }
+
+h2 {
+    font-style: italic;
+}
+
 
 div {
     text-align: center;
-    margin-bottom: 5vh;
 }
 
 .centered {
@@ -23,12 +40,15 @@ div {
   }
 
 .card-container {
+    background-color: #FFF1E6;
     display: flex;
     flex-wrap: wrap;
     justify-content: flex-end;
-    border: 2px solid grey;
+    border: 2px solid #724E39;
+    border-radius: 10px;
     padding: 10px;
-    max-width: 500px;
+    width: 500px;
+    height: 150px;
 }
 
 .card {
@@ -37,8 +57,30 @@ div {
     padding: 0 5px;
 }
 
+button {
+    background-color: #724E39;
+    color: #FFF1E6;
+    border-radius: 10px;
+    padding: 5px;
+}
+
 button:disabled {
     background-color: #cccccc;
     color: #666666;
     cursor: not-allowed;
-  }
+}
+
+#reset {
+    position: fixed;
+    top: 3%;
+    right: 8%;
+}
+
+.footer {
+    background-color: #75924B;
+    width: 100%;
+    height: 8%;
+    position: absolute;
+    bottom: 0%;
+    margin: 0;
+}
