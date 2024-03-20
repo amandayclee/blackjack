@@ -548,9 +548,12 @@ let scores;
 // obj: dealer: 0, player: 0
 let winner;
 // obj: 'dealer', 'player'
+let hitDouble;
 let hitStand;
 let faceDownCard;
 let deckShuffled;
+let playerHardHand;
+let isNewGame;
 
 /*----- cached elements  -----*/
 const msgEl = document.getElementById('msg');
@@ -560,6 +563,7 @@ const resetBtn = document.getElementById('reset');
 const zeroBtn = document.getElementById('zero');
 const roundBtn = document.getElementById('round');
 const standBtn = document.getElementById('stand');
+const doubleBtn = document.getElementById('double');
 const playerHandCard = document.querySelectorAll('#player-hand img');
 const dealerHandCard = document.querySelectorAll('#dealer-hand img');
 const playerScore = document.getElementById('player-score');
@@ -576,6 +580,7 @@ zeroBtn.addEventListener('click', function () {
 });
 hitBtn.addEventListener('click', handleHit);
 standBtn.addEventListener('click', handleStand);
+doubleBtn.addEventListener('click', handleDouble);
 chipBtns.forEach(chipBtn => {
   chipBtn.addEventListener('click', handleChip);
 });
@@ -619,14 +624,19 @@ function resetScoresAndHands() {
     dealer: [],
     player: []
   };
+
+  
 }
 
 function clearGameVariables() {
-  faceDownCard = {};
-  winner = "";
+  faceDownCard = false;
+  winner = false;
+  hitDouble = false;
   hitStand = false;
+  playerHardHand = true;
   betAmount.innerText = '0';
   bet = 0;
+  isNewGame = true;
 
   for (let obj of playerHandCard) {
     obj.removeAttribute('src');
@@ -634,8 +644,12 @@ function clearGameVariables() {
   for (let obj of dealerHandCard) {
     obj.removeAttribute('src');
   }
+}
 
-  setVisibility('New game');
+function handleDouble() {
+  betAmount.innerText = parseInt(betAmount.innerText) * 2;
+  hitDouble = 'first';
+  doubleBtn.disabled = true;
 }
 
 function handleStand() {
@@ -648,8 +662,15 @@ function handleStand() {
 }
 
 function handleHit() {
-  if (scores.player < 21 && scores.player > 0) {
+  if (hitDouble !== 'second' && scores.player < 21) {
     hands.player.push(shuffledDeck.pop());
+    render();
+  }
+
+  if (hitDouble === 'first') {
+    hitDouble = 'second';
+    hitBtn.disabled = true;
+    handleStand();
   }
   render();
 }
@@ -665,9 +686,9 @@ function handleChip(evt) {
 }
 
 function handleBet() {
-  setVisibility('Ongoing');
+  isNewGame = false;
   winner = null;
-  if (betAmount.innerText === null || betAmount.innerText === '0' || betAmount.innerText === '') {
+  if (betAmount.innerText === '0') {
     return;
   } else {
     bankAmount.innerText = parseInt(bankAmount.innerText) - parseInt(betAmount.innerText);
@@ -675,30 +696,38 @@ function handleBet() {
     hands.player.push(shuffledDeck.pop());
     hands.dealer.push(shuffledDeck.pop());
     hands.dealer.push(shuffledDeck.pop());
-
+    renderVisibility('Ongoing');
   }
   render();
 }
 
-function setVisibility(stage) {
-  if (stage === 'New game') {
+function renderVisibility() {
+  if (isNewGame) {
     chipBtns.forEach(btn => {
       btn.style.visibility = 'visible';
     });
     betBtn.disabled = false;
+    hitBtn.disabled = false;
+    doubleBtn.disabled = false;
     zeroBtn.style.visibility = 'visible';
     hitBtn.style.visibility = 'hidden';
     standBtn.style.visibility = 'hidden';
-    resetBtn.style.visibility = 'hidden';
+    doubleBtn.style.visibility = 'hidden';
     roundBtn.style.visibility = 'hidden';
   } else {
     chipBtns.forEach(btn => {
       btn.style.visibility = 'hidden';
     });
     betBtn.disabled = true;
+    if (!playerHardHand || hitDouble === 'first' || hitDouble === 'second') {
+      doubleBtn.disabled = true;
+    } else {
+      doubleBtn.disabled = false;
+    }
     zeroBtn.style.visibility = 'hidden';
     hitBtn.style.visibility = 'visible';
     standBtn.style.visibility = 'visible';
+    doubleBtn.style.visibility = 'visible';
   }
 
 }
@@ -725,7 +754,7 @@ function renderHands() {
   for (let i = 0; i < playerHandCard.length; i++) {
     if (!playerHandCard[i].src && hands.player.length > 0) {
       playerHandCard[i].src = hands.player[0].image;
-      scores.player += checkCardValue(hands.player[0], scores.player);
+      scores.player += checkCardValue(hands.player[0], 'player');
       hands.player.shift();
     }
   }
@@ -738,13 +767,24 @@ function renderHands() {
       } else {
         dealerHandCard[i].src = hands.dealer[0].image;
       }
-      console.log(`current card value is ${checkCardValue(hands.dealer[0], scores.dealer)}`)
-      scores.dealer += checkCardValue(hands.dealer[0], scores.dealer);
-      console.log(`current score value is ${scores.dealer}`)
+      scores.dealer += checkCardValue(hands.dealer[0], 'dealer');
       hands.dealer.shift();
     }
   }
   checkWinner();
+}
+
+function checkHardHand(checker) {
+  if (checker === 'player') {
+    if (scores.player + 11 > 21) {
+      return 1;
+    } else {
+      playerHardHand = false;
+      return 11;
+    }
+  } else {
+    return scores.dealer + 11 > 21 ? 1 : 11;
+  }
 }
 
 function checkCardValue(card, checker) {
@@ -755,7 +795,7 @@ function checkCardValue(card, checker) {
       case 'KING':
         return 10;
       case 'ACE':
-        return checker + 11 > 21 ? 1 : 11;
+        return checkHardHand(checker);
       default:
         return parseInt(card.value);
     }
@@ -775,7 +815,7 @@ function checkWinner() {
     winner = 'dbj'
   }
 
-  if (scores.dealer >= 17 && !winner && hitStand) {
+  if ((scores.dealer >= 17 && !winner && hitStand)) {
     if (scores.dealer < scores.player) {
       winner = 'player';
     } else if (scores.dealer > scores.player) {
@@ -800,10 +840,12 @@ function renderMsg() {
 }
 
 function renderScores() {
-  if (!hitStand && scores.player && !winner) {
-    dealerScore.innerText = `Dealer's score: ${scores.dealer - checkCardValue(faceDownCard, scores.dealer)}`;
+  if (!hitStand && !winner && faceDownCard) {
+    dealerScore.innerText = `Dealer's score: ${scores.dealer - checkCardValue(faceDownCard, 'dealer')}`;
+    console.log('THERE');
   } else {
     dealerScore.innerText = `Dealer's score: ${scores.dealer}`;
+    console.log('HERE');
   }
   playerScore.innerText = `Player's score: ${scores.player}`;
 }
@@ -815,7 +857,7 @@ function renderFaceDown() {
 
     hitBtn.style.visibility = 'hidden';
     standBtn.style.visibility = 'hidden';
-    resetBtn.style.visibility = 'visible';
+    doubleBtn.style.visibility = 'hidden';
     roundBtn.style.visibility = 'visible';
   }
 }
@@ -831,6 +873,7 @@ function renderBank() {
 }
 
 function render() {
+  renderVisibility();
   renderHands();
   renderMsg();
   renderScores();
