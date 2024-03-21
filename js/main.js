@@ -595,6 +595,10 @@ resetBtn.addEventListener('click', init);
 roundBtn.addEventListener('click', roundInit);
 bgmBtn.addEventListener('click', handleAudio);
 
+document.addEventListener('DOMContentLoaded', function() {
+  bgmEl.play();
+});
+
 /*----- functions -----*/
 init();
 
