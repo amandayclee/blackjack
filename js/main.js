@@ -528,15 +528,17 @@ const backCard = {
 
 const MSG_LOOKUPS = {
   null: 'Game is on!',
-  'tie': "It's a push! 🥸",
+  'tie': "It's push! 🥸",
   'player': "You Win! 🥳",
   'dealer': "You Lose! 🥶",
-  'pbj': "Wow You get a Blackjack! 🤩",
-  'dbj': "Dealer gets a Blackjack! 😅"
+  'pbj': "Wow You get Blackjack! 🤩",
+  'dbj': "Dealer gets Blackjack! 😅"
 }
 
 const sounds = {
-  bgm: "../assets/audio/fuzzball_parade.mp3"
+  bgm: "../assets/audio/fuzzball_parade.mp3",
+  bet:  "../assets/audio/bet.mp3",
+  deal:  "../assets/audio/deal.mp3"
 }
 
 /*----- state variables -----*/
@@ -652,6 +654,12 @@ function clearGameVariables() {
   }
 }
 
+function playAnAudio(soundName) {
+  let sound = new Audio(sounds[soundName]);
+  sound.play();
+}
+
+
 function handleAudio() {
   if (bgmEl.paused) {
     bgmEl.currentTime = audioPausedTime;
@@ -690,6 +698,7 @@ function handleHit() {
     hitBtn.disabled = true;
     handleStand();
   }
+  playAnAudio("deal");
 }
 
 function handleChip(evt) {
@@ -700,6 +709,7 @@ function handleChip(evt) {
     return;
   }
   betAmount.innerText = String(betMoney);
+  playAnAudio("bet");
 }
 
 function handleBet() {
@@ -716,6 +726,7 @@ function handleBet() {
     renderVisibility('Ongoing');
   }
   render();
+  playAnAudio("deal");
 }
 
 function renderVisibility() {
