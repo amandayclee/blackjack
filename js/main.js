@@ -557,7 +557,6 @@ let deckShuffled;
 let playerHardHand;
 let isNewGame;
 let audioPausedTime;
-let rednercall;
 
 /*----- cached elements  -----*/
 const msgEl = document.getElementById('msg');
@@ -899,8 +898,6 @@ function renderBank() {
 }
 
 function render() {
-  rendercall += 1;
-  console.log(`this is ${rendercall}`);
   renderVisibility();
   renderHands();
   renderMsg();
