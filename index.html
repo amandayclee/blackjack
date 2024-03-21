@@ -12,6 +12,7 @@
 <body>
     <h1>Blackjack</h1>
     <h2 id="msg">Place some bets!</h2>
+    <audio id="bgm" src="./assets/audio/fuzzball_parade.mp3" autoplay></audio>
     <div>
         <span id="card-count">52 Cards Left</span> ... <span>Bankroll: $<span id="bankroll">1000</span></span>
         <p>Bet Amount: $<span id="bet-input">0</span> <button id="bet">Bet</button></p>
@@ -25,7 +26,6 @@
             <button id="zero">Zero Out</button>
         </p>
     </div>
-
     <div>
         <h2>Dealer's hand</h2>
         <section id="dealer-hand" class="card-container">
@@ -53,7 +53,7 @@
         <button id="double">Double</button>
     </div>
     <p><button id="round">Another Round</button></p>
-    <p><button id="reset">Reset the Game</button></p>
+    <p id="top-right"><button id="reset">Reset the Game</button> <button id="bgm-btn">Background Music</button></p>
 
     <div class="footer"></div>
 </body>

@@ -17,7 +17,7 @@ body {
     flex-direction: column;
     align-items: center;
     justify-content: center;
-    background-image: url('./assets/grass_bottom.png'), url('./assets/birds_top.png');
+    background-image: url('../assets/img/grass_bottom.png'), url('../assets/img/birds_top.png');
     background-position: bottom, top;
     background-size: auto 650px, 850px auto;
     background-repeat: repeat-x, no-repeat;
@@ -52,9 +52,8 @@ div {
 }
 
 .card {
-    max-width: 20%;
+    max-width: 18%;
     max-height: auto;
-    padding: 0 5px;
 }
 
 button {
@@ -70,10 +69,10 @@ button:disabled {
     cursor: not-allowed;
 }
 
-#reset {
+#top-right {
     position: fixed;
     top: 3%;
-    right: 8%;
+    right: 3%;
 }
 
 .footer {

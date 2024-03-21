@@ -535,13 +535,15 @@ const MSG_LOOKUPS = {
   'dbj': "Dealer gets a Blackjack!"
 }
 
+const sounds = {
+  bgm: "../assets/audio/fuzzball_parade.mp3"
+}
+
 /*----- state variables -----*/
 let shuffledDeck;
 // obj;
 let deckLeft;
 // integer, how many cards left in the deck
-let bet;
-// integer, how much does player bet
 let hands;
 // obj: dealer: '6D', '4H', player: '2S', 'JD'
 let scores;
@@ -554,6 +556,8 @@ let faceDownCard;
 let deckShuffled;
 let playerHardHand;
 let isNewGame;
+let audioPausedTime;
+let rednercall;
 
 /*----- cached elements  -----*/
 const msgEl = document.getElementById('msg');
@@ -572,6 +576,9 @@ const betAmount = document.getElementById('bet-input');
 const chipBtns = document.querySelectorAll('.bet-amount');
 const bankAmount = document.getElementById('bankroll');
 const betBtn = document.getElementById('bet');
+const bgmEl = document.getElementById('bgm');
+const bgmBtn = document.getElementById('bgm-btn');
+
 
 /*----- event listeners -----*/
 betBtn.addEventListener('click', handleBet);
@@ -587,6 +594,7 @@ chipBtns.forEach(chipBtn => {
 
 resetBtn.addEventListener('click', init);
 roundBtn.addEventListener('click', roundInit);
+bgmBtn.addEventListener('click', handleAudio);
 
 /*----- functions -----*/
 init();
@@ -595,6 +603,7 @@ function init() {
   resetScoresAndHands();
   clearGameVariables();
 
+  rendercall = 0;
   deckShuffled = false;
   bankAmount.innerText = '1000';
   shuffledDeck = getShuffledDeck(originalDeck);
@@ -624,8 +633,6 @@ function resetScoresAndHands() {
     dealer: [],
     player: []
   };
-
-  
 }
 
 function clearGameVariables() {
@@ -635,7 +642,6 @@ function clearGameVariables() {
   hitStand = false;
   playerHardHand = true;
   betAmount.innerText = '0';
-  bet = 0;
   isNewGame = true;
 
   for (let obj of playerHandCard) {
@@ -643,6 +649,16 @@ function clearGameVariables() {
   }
   for (let obj of dealerHandCard) {
     obj.removeAttribute('src');
+  }
+}
+
+function handleAudio(evt) {
+  if (bgm.paused) {
+    bgm.currentTime = audioPausedTime;
+    bgm.play();
+  } else {
+    bgm.pause();
+    audioPausedTime = bgm.currentTime;
   }
 }
 
@@ -672,7 +688,6 @@ function handleHit() {
     hitBtn.disabled = true;
     handleStand();
   }
-  render();
 }
 
 function handleChip(evt) {
@@ -842,10 +857,8 @@ function renderMsg() {
 function renderScores() {
   if (!hitStand && !winner && faceDownCard) {
     dealerScore.innerText = `Dealer's score: ${scores.dealer - checkCardValue(faceDownCard, 'dealer')}`;
-    console.log('THERE');
   } else {
     dealerScore.innerText = `Dealer's score: ${scores.dealer}`;
-    console.log('HERE');
   }
   playerScore.innerText = `Player's score: ${scores.player}`;
 }
@@ -863,16 +876,31 @@ function renderFaceDown() {
 }
 
 function renderBank() {
-  if (winner === 'pbj') {
-    bankAmount.innerText = parseInt(bankAmount.innerText) + parseInt(betAmount.innerText) + parseInt(betAmount.innerText) * 1.5;
-  } else if (winner === 'player') {
-    bankAmount.innerText = parseInt(bankAmount.innerText) + parseInt(betAmount.innerText) + parseInt(betAmount.innerText) * 1;
-  } else if (winner === 'tie') {
-    bankAmount.innerText = parseInt(bankAmount.innerText) + parseInt(betAmount.innerText);
+  if (winner) {
+    let bankAmountAfterDeductBet = parseInt(bankAmount.innerText)
+    let betAmountInt = parseInt(betAmount.innerText)
+    let winning = 0;
+
+    if (winner === 'pbj') {
+      winning = betAmountInt * 1.5;
+    } else if (winner === 'player') {
+      winning = betAmountInt * 1;
+    } else if (winner === 'tie') {
+      winning = 0;
+    } else if (winner === 'dealer' || winner === 'dbj')
+    {
+      winning = betAmountInt * -1;
+    }
+
+    console.log(`bankAmountAfterDeductBet ${bankAmountAfterDeductBet} + betAmountInt ${betAmountInt} + winning ${winning}`)
+
+      bankAmount.innerText = bankAmountAfterDeductBet + betAmountInt + winning;
   }
 }
 
 function render() {
+  rendercall += 1;
+  console.log(`this is ${rendercall}`);
   renderVisibility();
   renderHands();
   renderMsg();
