@@ -602,6 +602,7 @@ function init() {
   resetScoresAndHands();
   clearGameVariables();
 
+  audioPausedTime = 0;
   rendercall = 0;
   deckShuffled = false;
   bankAmount.innerText = '1000';

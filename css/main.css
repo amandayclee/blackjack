@@ -19,7 +19,7 @@ body {
     justify-content: center;
     background-image: url('../assets/img/birds_top.png'), url('../assets/img/grass_bottom.png');
     background-position: top, bottom;
-    background-size: 50%, 70%;
+    background-size: 50%, 50%;
     background-repeat: no-repeat, repeat-x;
     background-attachment: fixed, fixed;
 }
