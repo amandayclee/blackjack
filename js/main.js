@@ -528,11 +528,11 @@ const backCard = {
 
 const MSG_LOOKUPS = {
   null: 'Game is on!',
-  'tie': "It's a push!",
-  'player': "You Win!",
-  'dealer': "You Lose!",
-  'pbj': "Wow You get a Blackjack!",
-  'dbj': "Dealer gets a Blackjack!"
+  'tie': "It's a push! 🥸",
+  'player': "You Win! 🥳",
+  'dealer': "You Lose! 🥶",
+  'pbj': "Wow You get a Blackjack! 🤩",
+  'dbj': "Dealer gets a Blackjack! 😅"
 }
 
 const sounds = {
@@ -595,10 +595,6 @@ resetBtn.addEventListener('click', init);
 roundBtn.addEventListener('click', roundInit);
 bgmBtn.addEventListener('click', handleAudio);
 
-document.addEventListener('DOMContentLoaded', function() {
-  bgmEl.play();
-});
-
 /*----- functions -----*/
 init();
 
@@ -655,18 +651,20 @@ function clearGameVariables() {
   }
 }
 
-function handleAudio(evt) {
-  if (bgm.paused) {
-    bgm.currentTime = audioPausedTime;
-    bgm.play();
+function handleAudio() {
+  if (bgmEl.paused) {
+    bgmEl.currentTime = audioPausedTime;
+    bgmEl.play();
   } else {
-    bgm.pause();
-    audioPausedTime = bgm.currentTime;
+    bgmEl.pause();
+    audioPausedTime = bgmEl.currentTime;
   }
 }
 
 function handleDouble() {
+  bankAmount.innerText = parseInt(bankAmount.innerText) + parseInt(betAmount.innerText);
   betAmount.innerText = parseInt(betAmount.innerText) * 2;
+  bankAmount.innerText = parseInt(bankAmount.innerText) - parseInt(betAmount.innerText);
   hitDouble = 'first';
   doubleBtn.disabled = true;
 }
@@ -895,9 +893,8 @@ function renderBank() {
       winning = betAmountInt * -1;
     }
 
-    console.log(`bankAmountAfterDeductBet ${bankAmountAfterDeductBet} + betAmountInt ${betAmountInt} + winning ${winning}`)
 
-      bankAmount.innerText = bankAmountAfterDeductBet + betAmountInt + winning;
+    bankAmount.innerText = bankAmountAfterDeductBet + betAmountInt + winning;
   }
 }
 
