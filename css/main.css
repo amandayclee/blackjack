@@ -1,6 +1,6 @@
 @font-face {
     font-family: "Tr";
-    src: url('./fonts/typori_regular.ttf') format('truetype');
+    src: url('./fonts/wildnote_regular.ttf') format('truetype');
 }
 
 * {
@@ -22,6 +22,7 @@ body {
     background-size: 50%, 50%;
     background-repeat: no-repeat, repeat-x;
     background-attachment: fixed, fixed;
+    font-size: 1.6em;
 }
 
 h1 img {
@@ -30,6 +31,7 @@ h1 img {
     width: 30%;
     height: auto;
 }
+
 
 .msg {
     font-style: italic;
@@ -54,13 +56,14 @@ div {
     border: 2px dashed #724E39;
     border-radius: 10px;
     padding: 10px;
-    width: 500px;
+    width: 600px;
     height: 150px;
 }
 
 .card {
-    max-width: 18%;
+    max-width: 15%;
     max-height: auto;
+    padding-left: 1%;
 }
 
 button {
@@ -68,6 +71,7 @@ button {
     color: #FFF1E6;
     border-radius: 10px;
     padding: 5px;
+    font-size: 0.7em;
 }
 
 button:disabled {
