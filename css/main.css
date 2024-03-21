@@ -24,6 +24,13 @@ body {
     background-position-y: 355px, 0px;
 }
 
+h1 img {
+    display: block;
+    margin: 0 auto;
+    width: 30%;
+    height: auto;
+}
+
 h2 {
     font-style: italic;
 }
@@ -37,7 +44,7 @@ div {
     display: flex;
     justify-content: center;
     align-items: center;
-  }
+}
 
 .card-container {
     background-color: #FFF1E6;
