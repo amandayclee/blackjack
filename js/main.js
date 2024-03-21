@@ -536,9 +536,9 @@ const MSG_LOOKUPS = {
 }
 
 const sounds = {
-  bgm: "../assets/audio/fuzzball_parade.mp3",
-  bet:  "../assets/audio/bet.mp3",
-  deal:  "../assets/audio/deal.mp3"
+  bgm: "./assets/audio/fuzzball_parade.mp3",
+  bet:  "./assets/audio/bet.mp3",
+  deal:  "./assets/audio/deal.mp3"
 }
 
 /*----- state variables -----*/
