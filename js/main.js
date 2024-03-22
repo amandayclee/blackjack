@@ -537,8 +537,8 @@ const MSG_LOOKUPS = {
 
 const sounds = {
   bgm: "./assets/audio/fuzzball_parade.mp3",
-  bet:  "./assets/audio/bet.mp3",
-  deal:  "./assets/audio/deal.mp3"
+  bet: "./assets/audio/bet.mp3",
+  deal: "./assets/audio/deal.mp3"
 }
 
 /*----- state variables -----*/
@@ -767,7 +767,7 @@ function getShuffledDeck(deck) {
   } else {
     tempDeck = Object.values(deck);
   }
-  
+
   const newShuffledDeck = [];
   while (tempDeck.length) {
     const rndIdx = Math.floor(Math.random() * tempDeck.length);
@@ -900,8 +900,7 @@ function renderBank() {
       winning = betAmountInt * 1;
     } else if (winner === 'tie') {
       winning = 0;
-    } else if (winner === 'dealer' || winner === 'dbj')
-    {
+    } else if (winner === 'dealer' || winner === 'dbj') {
       winning = betAmountInt * -1;
     }
 
