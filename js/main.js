@@ -559,6 +559,7 @@ let deckShuffled;
 let playerHardHand;
 let isNewGame;
 let audioPausedTime;
+let isCalulated;
 
 /*----- cached elements  -----*/
 const msgEl = document.getElementById('msg');
@@ -638,6 +639,7 @@ function resetScoresAndHands() {
 }
 
 function clearGameVariables() {
+  isCalulated = false;
   faceDownCard = false;
   winner = false;
   hitDouble = false;
@@ -890,7 +892,8 @@ function renderFaceDown() {
 }
 
 function renderBank() {
-  if (winner) {
+  if (winner && !isCalulated) {
+    isCalulated = true;
     let betAmountInt = parseInt(betAmount.innerText)
     let winning = 0;
 
@@ -904,7 +907,7 @@ function renderBank() {
       winning = betAmountInt * -1;
     }
 
-
+    console.log(`${parseInt(bankAmount.innerText)} + ${betAmountInt} + ${winning}`);
     bankAmount.innerText = parseInt(bankAmount.innerText) + betAmountInt + winning;
   }
 }
