@@ -891,11 +891,8 @@ function renderFaceDown() {
 
 function renderBank() {
   if (winner) {
-    let bankAmountAfterDeductBet = parseInt(bankAmount.innerText)
     let betAmountInt = parseInt(betAmount.innerText)
     let winning = 0;
-
-    bankAmountAfterDeductBet -= betAmountInt;
 
     if (winner === 'pbj') {
       winning = betAmountInt * 1.5;
@@ -908,7 +905,7 @@ function renderBank() {
     }
 
 
-    bankAmount.innerText = bankAmountAfterDeductBet + betAmountInt + winning;
+    bankAmount.innerText = parseInt(bankAmount.innerText) + betAmountInt + winning;
   }
 }
 
