@@ -895,6 +895,8 @@ function renderBank() {
     let betAmountInt = parseInt(betAmount.innerText)
     let winning = 0;
 
+    bankAmountAfterDeductBet -= betAmountInt;
+
     if (winner === 'pbj') {
       winning = betAmountInt * 1.5;
     } else if (winner === 'player') {
