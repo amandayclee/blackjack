@@ -906,8 +906,7 @@ function renderBank() {
     } else if (winner === 'dealer' || winner === 'dbj') {
       winning = betAmountInt * -1;
     }
-
-    console.log(`${parseInt(bankAmount.innerText)} + ${betAmountInt} + ${winning}`);
+    
     bankAmount.innerText = parseInt(bankAmount.innerText) + betAmountInt + winning;
   }
 }
