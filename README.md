@@ -3,11 +3,14 @@ Blackjack is a famous card game found in many casinos. It's a game where players
 
 
 # Screenshot
-<img src="./assets/img/start.png">
-<img src="./assets/img/ongoing.png">
-<img src="./assets/img/win.png">
-<img src="./assets/img/lose.png">
+<img src="./assets/img/start.png" height="200">
+<img src="./assets/img/ongoing.png" height="200">
+<img src="./assets/img/win.png" height="200">
+<img src="./assets/img/lose.png" height="200">
 
+<img src="./assets/img/mobile1.png" width="150">
+<img src="./assets/img/mobile2.png" width="150">
+<img src="./assets/img/mobile3.png" width="150">
 
 # Technologies Used
 - Javascript
