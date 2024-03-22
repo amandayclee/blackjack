@@ -648,14 +648,17 @@ function clearGameVariables() {
 
   for (let obj of playerHandCard) {
     obj.removeAttribute('src');
+    obj.style.border = 'none';
   }
   for (let obj of dealerHandCard) {
     obj.removeAttribute('src');
+    obj.style.border = 'none';
   }
 }
 
 function playAnAudio(soundName) {
   let sound = new Audio(sounds[soundName]);
+  sound.volumn = 0.5;
   sound.play();
 }
 
