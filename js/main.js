@@ -647,10 +647,10 @@ function clearGameVariables() {
   isNewGame = true;
 
   for (let obj of playerHandCard) {
-    obj.src = "";
+    obj.removeAttribute('src');
   }
   for (let obj of dealerHandCard) {
-    obj.src = "";
+    obj.removeAttribute('src');
   }
 }
 
